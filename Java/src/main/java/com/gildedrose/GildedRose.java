@@ -1,5 +1,8 @@
 package com.gildedrose;
 
+/**
+ * The GildedRose class manages an array of items and updates their quality using the Strategy pattern.
+ */
 class GildedRose {
     Item[] items;
 
@@ -7,56 +10,31 @@ class GildedRose {
         this.items = items;
     }
 
+    /**
+     * Updates the quality and sellIn of all items using their respective strategies.
+     */
     public void updateQuality() {
-        for (int i = 0; i < items.length; i++) {
-            if (!items[i].name.equals("Aged Brie")
-                    && !items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                if (items[i].quality > 0) {
-                    if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                        items[i].quality = items[i].quality - 1;
-                    }
-                }
-            } else {
-                if (items[i].quality < 50) {
-                    items[i].quality = items[i].quality + 1;
+        for (Item item : items) {
+            getStrategy(item).update(item);
+        }
+    }
 
-                    if (items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        if (items[i].sellIn < 11) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-
-                        if (items[i].sellIn < 6) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                items[i].sellIn = items[i].sellIn - 1;
-            }
-
-            if (items[i].sellIn < 0) {
-                if (!items[i].name.equals("Aged Brie")) {
-                    if (!items[i].name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        if (items[i].quality > 0) {
-                            if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
-                                items[i].quality = items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        items[i].quality = items[i].quality - items[i].quality;
-                    }
-                } else {
-                    if (items[i].quality < 50) {
-                        items[i].quality = items[i].quality + 1;
-                    }
-                }
-            }
+    /**
+     * Selects the appropriate update strategy for the given item.
+     * @param item The item to update
+     * @return The update strategy
+     */
+    private UpdateStrategy getStrategy(Item item) {
+        if (item.name.equals("Aged Brie")) {
+            return new AgedBrieStrategy();
+        } else if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+            return new BackstagePassStrategy();
+        } else if (item.name.equals("Sulfuras, Hand of Ragnaros")) {
+            return new SulfurasStrategy();
+        } else if (item.name.toLowerCase().contains("conjured")) {
+            return new ConjuredStrategy();
+        } else {
+            return new DefaultStrategy();
         }
     }
 }
